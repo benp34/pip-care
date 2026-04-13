@@ -15,21 +15,22 @@
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* Header */
-.header{background:linear-gradient(135deg,#A855F7 0%,#7C3AED 50%,#6D28D9 100%);padding:40px 24px 48px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.header{background:linear-gradient(135deg,#A855F7 0%,#7C3AED 50%,#6D28D9 100%);padding:48px 24px 56px;text-align:center;color:#fff;position:relative;overflow:hidden}
+.header::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.06)}
 .header::after{content:'';position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:120%;height:60px;background:var(--bg);border-radius:50% 50% 0 0}
-.pip-logo{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:6px 16px 6px 8px;margin-bottom:20px}
-.pip-logo-icon{width:28px;height:28px;border-radius:8px;overflow:hidden}
-.pip-logo-icon img{width:100%;height:100%;object-fit:cover}
-.pip-mascot{width:64px;height:64px;margin:0 auto 12px;animation:float 3s ease-in-out infinite}
-.pip-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(0,0,0,.15))}
-.pip-logo span{font-family:'Quicksand',sans-serif;font-weight:700;font-size:14px;letter-spacing:.5px}
-.live-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;opacity:.8;margin-left:8px}
+.pip-brand{display:inline-flex;align-items:center;gap:6px;margin-bottom:20px}
+.pip-brand-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 14px 5px 10px}
+.pip-brand-pill .paw{font-size:16px}
+.pip-brand-pill span{font-family:'Quicksand',sans-serif;font-weight:700;font-size:13px;letter-spacing:.5px}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:rgba(255,255,255,.12);border-radius:12px;padding:4px 10px;margin-left:8px}
 .live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.6;box-shadow:0 0 0 4px rgba(34,197,94,0)}}
-.avatar{width:88px;height:88px;border-radius:50%;border:4px solid rgba(255,255,255,.3);object-fit:cover;margin:0 auto 14px;display:block;box-shadow:0 8px 24px rgba(0,0,0,.15)}
-.avatar-placeholder{width:88px;height:88px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 14px;border:4px solid rgba(255,255,255,.15)}
-.dog-name{font-family:'Quicksand',sans-serif;font-size:30px;font-weight:700;margin-bottom:4px;letter-spacing:-.5px}
-.dog-info{font-size:14px;opacity:.8;font-weight:500}
+.pip-mascot{width:72px;height:72px;margin:0 auto 16px;animation:float 3s ease-in-out infinite}
+.pip-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 16px rgba(0,0,0,.2))}
+.avatar{width:80px;height:80px;border-radius:50%;border:3px solid rgba(255,255,255,.35);object-fit:cover;margin:0 auto 14px;display:block;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.avatar-placeholder{display:none}
+.dog-name{font-family:'Quicksand',sans-serif;font-size:28px;font-weight:700;margin-bottom:4px;letter-spacing:-.5px}
+.dog-info{font-size:13px;opacity:.85;font-weight:500}
 
 /* Container */
 .container{max-width:500px;margin:-24px auto 0;padding:0 16px;position:relative;z-index:1}
@@ -73,7 +74,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 
 /* Loading */
 .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;background:linear-gradient(180deg,#F5F3FF 0%,#EDE9FE 100%)}
-.loading-logo{width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#A855F7,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:20px;box-shadow:0 8px 32px rgba(168,85,247,.25);animation:float 2s ease-in-out infinite}
+.loading-mascot{width:80px;height:80px;margin-bottom:20px;animation:float 2s ease-in-out infinite}
+.loading-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 16px rgba(168,85,247,.3))}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .loading-text{font-family:'Quicksand',sans-serif;font-size:18px;font-weight:700;color:var(--purple-dark);margin-bottom:6px}
 .loading-sub{font-size:13px;color:var(--text-sub)}
@@ -97,7 +99,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </style>
 </head>
 <body>
-<div id="app"><div class="loading"><div class="loading-logo"><img src="pip-avatar.png" alt="Pip" style="width:48px;height:48px;object-fit:contain"></div><div class="loading-text">Loading care profile</div><div class="loading-sub">Fetching the latest data...</div><div class="loading-bar"></div></div></div>
+<div id="app"><div class="loading"><div class="loading-mascot"><img src="pip-jumping.png" alt="Pip"></div><div class="loading-text">Loading care profile</div><div class="loading-sub">Fetching the latest data...</div><div class="loading-bar"></div></div></div>
 <script>
 var API='https://wsihkqgpjhrgwuzsxchy.supabase.co/functions/v1/share';
 var params=new URLSearchParams(window.location.search);
@@ -187,11 +189,11 @@ function FE(en,st){
 function render(data){
   var d=data.dog,info=[d.breed,d.age].filter(Boolean).join(' \u2022 ');
   var h='<div class="header">';
-  h+='<div class="pip-logo"><div class="pip-logo-icon"><img src="pip-avatar.png" alt="Pip"></div><span>pip</span>';
+  h+='<div class="pip-brand"><div class="pip-brand-pill"><span class="paw">\u{1F43E}</span><span>pip</span></div>';
   h+='<span class="live-badge"><span class="live-dot"></span>live</span>';
   h+='</div>';
-  h+='<div class="pip-mascot"><img src="pip-avatar.png" alt="Pip mascot"></div>';
-  h+=d.photo_url?'<img class="avatar" src="'+E(d.photo_url)+'" alt="'+E(d.name)+'">':'<div class="avatar-placeholder">\u{1F436}</div>';
+  h+='<div class="pip-mascot"><img src="pip-jumping.png" alt="Pip mascot"></div>';
+  if(d.photo_url)h+='<img class="avatar" src="'+E(d.photo_url)+'" alt="'+E(d.name)+'">';
   h+='<div class="dog-name">'+E(d.name)+'</div>';
   if(info)h+='<div class="dog-info">'+E(info)+'</div>';
   h+='</div><div class="container">';
