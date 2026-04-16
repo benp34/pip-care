@@ -352,25 +352,38 @@ function closeViewer(){
 // Wire the static close button once — avoids re-binding on every openViewer.
 document.getElementById('viewerClose').addEventListener('click',closeViewer);
 
-// Force-download a remote file. Fetches the bytes, wraps them in a blob, and
-// synthesizes a click on a hidden anchor — this bypasses Content-Disposition:
-// inline which Supabase storage sends by default. On iOS Safari where blob
-// downloads are unreliable, falls back to opening the URL in a new tab so the
-// user can long-press → Save.
+// Save a remote file to the user's device. Supabase storage serves files with
+// Content-Disposition: inline so the plain HTML `download` attribute is a no-op
+// (the browser just opens the file). We fetch the bytes and either:
+//   * (mobile, especially iOS) present the native OS share sheet so the user
+//     can pick "Save to Files", "Save Image", AirDrop, etc.
+//   * (desktop) synthesize a click on a hidden anchor with a blob URL to
+//     trigger a real browser download.
 async function forceDownload(url,filename){
-  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  if(isIOS){window.open(url,'_blank','noopener');return}
   try{
     var res=await fetch(url);
     if(!res.ok)throw new Error('HTTP '+res.status);
     var blob=await res.blob();
+    var file=new File([blob],filename||'file',{type:blob.type||'application/octet-stream'});
+    // Prefer the Web Share API with files on mobile — this is the only way to
+    // get a proper "Save to Files" option on iOS Safari.
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:filename});return}
+      catch(shareErr){
+        // User cancelled the share sheet — that's fine, stop here.
+        if(shareErr && shareErr.name==='AbortError')return;
+        // Otherwise fall through to blob-anchor download.
+      }
+    }
+    // Desktop path — blob URL + <a download>.
     var objUrl=URL.createObjectURL(blob);
     var a=document.createElement('a');
     a.href=objUrl;a.download=filename||'file';
     document.body.appendChild(a);a.click();
     setTimeout(function(){URL.revokeObjectURL(objUrl);a.remove()},200);
   }catch(e){
-    // Fallback — opening in a new tab at least gets the file in front of the user.
+    // Last-resort fallback — opening in a new tab at least gets the file in
+    // front of the user, who can then use the browser's own save action.
     window.open(url,'_blank','noopener');
   }
 }
