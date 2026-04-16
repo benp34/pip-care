@@ -63,16 +63,19 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .entry-date{font-size:12px;color:#9CA3AF;font-weight:400}
 .entry-link{color:#2563EB;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px}
 .entry-link:hover{text-decoration:underline}
-/* Inline viewer — keeps recipients on share.pip.dog, never leaks the storage URL */
-.viewer{position:fixed;inset:0;background:rgba(17,24,39,.92);display:none;z-index:1000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
+/* Inline viewer — keeps recipients on share.pip.dog, never leaks the storage URL.
+   Toolbar is a sibling of the content area (not absolute-positioned over it) so that
+   iOS Safari's native PDF viewer can't paint over the close/download controls. */
+.viewer{position:fixed;inset:0;background:rgba(17,24,39,.95);display:none;z-index:1000;flex-direction:column;backdrop-filter:blur(8px)}
 .viewer.open{display:flex}
-.viewer-inner{position:relative;width:100%;height:100%;max-width:1100px;display:flex;align-items:center;justify-content:center}
+.viewer-toolbar{display:flex;justify-content:space-between;align-items:center;height:52px;padding:0 12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:0;flex-shrink:0;background:rgba(17,24,39,.92);border-bottom:1px solid rgba(255,255,255,.08)}
+.viewer-close{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;line-height:1;cursor:pointer;user-select:none}
+.viewer-close:hover{background:rgba(255,255,255,.22)}
+.viewer-dl{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#fff;padding:8px 16px;border-radius:999px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;text-decoration:none}
+.viewer-dl:hover{background:rgba(255,255,255,.22)}
+.viewer-inner{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden}
 .viewer-inner img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .viewer-inner iframe{width:100%;height:100%;border:none;border-radius:8px;background:#fff}
-.viewer-close{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;cursor:pointer;user-select:none;z-index:2}
-.viewer-close:hover{background:rgba(255,255,255,.25)}
-.viewer-dl{position:absolute;bottom:16px;right:16px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);color:#fff;padding:10px 18px;border-radius:999px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;text-decoration:none;z-index:2}
-.viewer-dl:hover{background:rgba(255,255,255,.25)}
 .severity-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600}
 .severity-severe{background:#FEE2E2;color:#DC2626}
 .severity-moderate{background:#FFF7ED;color:#EA580C}
@@ -120,7 +123,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </head>
 <body>
 <div id="app"><div class="loading"><div class="loading-mascot"><img src="pip-jumping.png" alt="Pip"></div><div class="loading-text">Loading care profile</div><div class="loading-sub">Fetching the latest data...</div><div class="loading-bar"></div></div></div>
-<div id="viewer" class="viewer" role="dialog" aria-modal="true"><div class="viewer-inner" id="viewerInner"></div></div>
+<div id="viewer" class="viewer" role="dialog" aria-modal="true"><div class="viewer-toolbar"><button class="viewer-close" id="viewerClose" aria-label="Close">&#x2715;</button><a class="viewer-dl" id="viewerDl" target="_blank" rel="noopener">Download</a></div><div class="viewer-inner" id="viewerInner"></div></div>
 <script>
 var API='https://wsihkqgpjhrgwuzsxchy.supabase.co/functions/v1/share';
 var params=new URLSearchParams(window.location.search);
@@ -168,7 +171,10 @@ function FE(en,st,bc,bg){
         h+='<div class="entry-content">';
         if(p.severity){var cls=p.severity==='Severe'?'severe':p.severity==='Moderate'?'moderate':'mild';h+='<span class="severity-badge severity-'+cls+'">'+E(p.severity)+'</span> '}
         if(p.reaction)h+='<div style="margin-top:4px"><span class="entry-label">Reaction:</span> '+E(p.reaction)+'</div>';
-        if(p.content||p.notes)h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(p.content||p.notes)+'</div>';
+        // Skip notes that are just the literal placeholder-bait word 'Treatment' (users
+        // occasionally typed it thinking it was a required label).
+        var allergyNotes=p.content||p.notes;
+        if(allergyNotes && allergyNotes.trim().toLowerCase()!=='treatment')h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(allergyNotes)+'</div>';
         h+='</div>';
       }else if(Array.isArray(p.meals)){
         h+='<div class="entry-content">';
@@ -222,6 +228,11 @@ function FE(en,st,bc,bg){
     if(isImg){      iconSvg=ICON_IMAGE;     label='Tap to view image';    vtype='image';
     }else if(isPdf){iconSvg=ICON_FILE_TEXT; label='Tap to view document'; vtype='pdf';
     }else{          iconSvg=ICON_FILE_TEXT; label='Tap to view document'; vtype='file'; }
+    // In the Documents section, treat everything as a document — even if the user
+    // uploaded a photo, the card should read 'Tap to view document' and use the
+    // FileText icon. vtype stays 'image' so the inline viewer still renders it
+    // correctly; only the chip label/icon is overridden.
+    if(t.includes('document')){ iconSvg=ICON_FILE_TEXT; label='Tap to view document'; }
     h+='<a class="tap-view" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener">'+iconSvg+'<span>'+label+'</span></a>';
   }
 
@@ -302,14 +313,20 @@ function pinUI(em){
 }
 
 // ── Inline viewer (keeps recipients on share.pip.dog; hides raw storage URL) ──
+// Toolbar + content are sibling elements so the close button always sits above
+// the content — important on iOS Safari, where native PDF rendering in an iframe
+// otherwise paints over any absolutely-positioned controls.
 function openViewer(type,url,name){
-  var v=document.getElementById('viewer'),inner=document.getElementById('viewerInner');
-  var close='<button class="viewer-close" aria-label="Close" onclick="closeViewer()">\u2715</button>';
-  var dl='<a class="viewer-dl" href="'+E(url)+'" download="'+E(name||'file')+'" target="_blank" rel="noopener">Download</a>';
+  var v=document.getElementById('viewer'),inner=document.getElementById('viewerInner'),dl=document.getElementById('viewerDl');
+  dl.setAttribute('href',url);
+  dl.setAttribute('download',name||'file');
   if(type==='image'){
-    inner.innerHTML=close+'<img src="'+E(url)+'" alt="'+E(name||'Photo')+'">'+dl;
+    inner.innerHTML='<img src="'+E(url)+'" alt="'+E(name||'Photo')+'">';
   }else if(type==='pdf'){
-    inner.innerHTML=close+'<iframe src="'+E(url)+'" title="'+E(name||'PDF')+'"></iframe>'+dl;
+    // #view=FitH hints mobile PDF viewers (iOS Safari, Chrome) to fit horizontally
+    // instead of rendering at native zoom, which would require horizontal scrolling.
+    var pdfUrl=url+(url.indexOf('#')>=0?'&':'#')+'view=FitH';
+    inner.innerHTML='<iframe src="'+E(pdfUrl)+'" title="'+E(name||'PDF')+'"></iframe>';
   }else{
     // Unknown file type — fall back to opening the file directly (rare path)
     window.open(url,'_blank','noopener');return;
@@ -323,6 +340,8 @@ function closeViewer(){
   inner.innerHTML='';
   document.body.style.overflow='';
 }
+// Wire the static close button once — avoids re-binding on every openViewer.
+document.getElementById('viewerClose').addEventListener('click',closeViewer);
 // Delegated click handler — intercept any link with data-view-type
 document.addEventListener('click',function(ev){
   var a=ev.target.closest&&ev.target.closest('[data-view-type]');
