@@ -160,8 +160,9 @@ function FE(en,st,bc,bg){
       if(t.includes('contact')){
         h+='<div class="entry-content">';
         if(p.role)h+='<div style="color:var(--text-sub);font-size:12px;margin-bottom:4px">'+E(p.role)+'</div>';
-        if(p.phone)h+='<div><a class="entry-link" href="tel:'+E(p.phone)+'">\u{1F4F1} '+E(p.phone)+'</a></div>';
-        if(p.phone2)h+='<div><a class="entry-link" href="tel:'+E(p.phone2)+'">\u{1F4F1} '+E(p.phone2)+'</a></div>';
+        // Strip whitespace from tel: URL — iOS treats `tel:+44 7xxx` with spaces as malformed and falls back to Messages.
+        if(p.phone)h+='<div><a class="entry-link" href="tel:'+E(String(p.phone).replace(/[^\d+]/g,''))+'">\u{1F4F1} '+E(p.phone)+'</a></div>';
+        if(p.phone2)h+='<div><a class="entry-link" href="tel:'+E(String(p.phone2).replace(/[^\d+]/g,''))+'">\u{1F4F1} '+E(p.phone2)+'</a></div>';
         if(p.email)h+='<div><a class="entry-link" href="mailto:'+E(p.email)+'">\u2709\uFE0F '+E(p.email)+'</a></div>';
         if(p.content||p.notes)h+='<div style="color:var(--text-sub);margin-top:6px;font-size:12px">'+E(p.content||p.notes)+'</div>';
         h+='</div>';
