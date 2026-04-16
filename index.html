@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+<meta name="googlebot" content="noindex, nofollow">
 <title>Care Profile — Pip</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Care Profile — shared via Pip">
@@ -72,6 +74,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .doc-text{font-size:12px;font-weight:500;flex:1}
 .doc-action{font-size:11px;color:var(--purple);font-weight:600}
 .empty{font-size:13px;color:var(--text-light);font-style:italic;padding:12px 0}
+.free-text{font-size:14px;color:#374151;line-height:1.6;padding:10px 0;white-space:pre-wrap;word-break:break-word}
 .meal-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
 .meal-name{font-size:13px;font-weight:500;color:var(--text)}
 .meal-time{font-size:12px;color:var(--text-light);font-weight:500}
@@ -214,10 +217,17 @@ function render(data){
       h+='<div class="section" style="border-left-color:'+BC(s.title)+'">';
       h+='<div class="section-header"><span class="section-emoji">'+(s.emoji||SE(s.title))+'</span>';
       h+='<span class="section-title">'+E(s.title)+'</span>';
-      if(s.entries.length)h+='<span class="entry-count">'+s.entries.length+'</span>';
+      if((!s.type||s.type==='data')&&s.entries&&s.entries.length)h+='<span class="entry-count">'+s.entries.length+'</span>';
       h+='</div><div class="section-body">';
-      if(!s.entries.length)h+='<div class="empty">No entries yet</div>';
-      else s.entries.forEach(function(e){h+=FE(e,s.title)});
+      if(s.type==='text'){
+        // Free-text section — preserve line breaks from user input.
+        h+='<div class="free-text">'+E(s.content).replace(/\n/g,'<br/>')+'</div>';
+      }else{
+        // Data-driven section (default for legacy payloads without `type`).
+        var es=s.entries||[];
+        if(!es.length)h+='<div class="empty">No entries yet</div>';
+        else es.forEach(function(e){h+=FE(e,s.title)});
+      }
       h+='</div></div>';
     });
   }
