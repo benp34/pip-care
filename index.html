@@ -21,7 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 <style>
-:root{--purple:#A855F7;--purple-dark:#7C3AED;--bg:#F5F3FF;--card:#fff;--text:#1F2937;--text-sub:#6B7280;--text-light:#9CA3AF;--border:#E5E7EB;--green:#22C55E}
+:root{--purple:#A855F7;--purple-dark:#7C3AED;--bg:#FAFAF9;--card:#fff;--text:#1F2937;--text-sub:#6B7280;--text-light:#9CA3AF;--border:#E5E7EB;--green:#22C55E}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
 
@@ -64,9 +64,20 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .entry-link{color:#2563EB;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px}
 .entry-link:hover{text-decoration:underline}
 /* Photo thumbnail — matches in-app 80x80 rounded */
-.photo-thumb{display:inline-block;margin-top:6px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.photo-thumb{display:inline-block;margin-top:6px;text-decoration:none;-webkit-tap-highlight-color:transparent;cursor:zoom-in}
 .photo-thumb img{width:80px;height:80px;border-radius:8px;object-fit:cover;display:block;border:1px solid rgba(0,0,0,.05)}
 .photo-thumb:hover img{opacity:.92}
+
+/* Inline viewer — keeps recipients on share.pip.dog, never leaks the storage URL */
+.viewer{position:fixed;inset:0;background:rgba(17,24,39,.92);display:none;z-index:1000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
+.viewer.open{display:flex}
+.viewer-inner{position:relative;width:100%;height:100%;max-width:1100px;display:flex;align-items:center;justify-content:center}
+.viewer-inner img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.viewer-inner iframe{width:100%;height:100%;border:none;border-radius:8px;background:#fff}
+.viewer-close{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;line-height:1;cursor:pointer;user-select:none;z-index:2}
+.viewer-close:hover{background:rgba(255,255,255,.25)}
+.viewer-dl{position:absolute;bottom:16px;right:16px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);color:#fff;padding:10px 18px;border-radius:999px;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;text-decoration:none;z-index:2}
+.viewer-dl:hover{background:rgba(255,255,255,.25)}
 .severity-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600}
 .severity-severe{background:#FEE2E2;color:#DC2626}
 .severity-moderate{background:#FFF7ED;color:#EA580C}
@@ -115,6 +126,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </head>
 <body>
 <div id="app"><div class="loading"><div class="loading-mascot"><img src="pip-jumping.png" alt="Pip"></div><div class="loading-text">Loading care profile</div><div class="loading-sub">Fetching the latest data...</div><div class="loading-bar"></div></div></div>
+<div id="viewer" class="viewer" role="dialog" aria-modal="true"><div class="viewer-inner" id="viewerInner"></div></div>
 <script>
 var API='https://wsihkqgpjhrgwuzsxchy.supabase.co/functions/v1/share';
 var params=new URLSearchParams(window.location.search);
@@ -149,6 +161,7 @@ function FE(en,st,bc,bg){
         h+='<div class="entry-content">';
         if(p.role)h+='<div style="color:var(--text-sub);font-size:12px;margin-bottom:4px">'+E(p.role)+'</div>';
         if(p.phone)h+='<div><a class="entry-link" href="tel:'+E(p.phone)+'">\u{1F4F1} '+E(p.phone)+'</a></div>';
+        if(p.phone2)h+='<div><a class="entry-link" href="tel:'+E(p.phone2)+'">\u{1F4F1} '+E(p.phone2)+'</a></div>';
         if(p.email)h+='<div><a class="entry-link" href="mailto:'+E(p.email)+'">\u2709\uFE0F '+E(p.email)+'</a></div>';
         if(p.content||p.notes)h+='<div style="color:var(--text-sub);margin-top:6px;font-size:12px">'+E(p.content||p.notes)+'</div>';
         h+='</div>';
@@ -197,17 +210,22 @@ function FE(en,st,bc,bg){
     }else{h+='<div class="entry-content">'+E(String(p))+'</div>'}
   }catch(e){h+='<div class="entry-content">'+E(en.content)+'</div>'}}
 
-  // Photo thumbnail (images) or compact doc link (PDFs / other files)
+  // Photo thumbnail (images) or compact doc link (PDFs / other files).
+  // Clicks are intercepted and opened in an inline viewer so recipients
+  // never see the raw storage URL in the address bar.
   if(en.file_url){
     var isImg=en.file_type&&(en.file_type.includes('image')||en.file_type.includes('heic')||en.file_type.includes('jpg')||en.file_type.includes('png'));
+    var safeUrl=E(en.file_url);
+    var safeName=E(en.title||'file');
     if(isImg){
       // Real thumbnail — matches in-app 80x80 rounded preview
-      h+='<a class="photo-thumb" href="'+E(en.file_url)+'" target="_blank" rel="noopener"><img src="'+E(en.file_url)+'" alt="Photo" loading="lazy"></a>';
+      h+='<a class="photo-thumb" href="'+safeUrl+'" data-view-type="image" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><img src="'+safeUrl+'" alt="Photo" loading="lazy"></a>';
     }else{
       var isPdf=en.file_type&&en.file_type.includes('pdf');
       var icon=isPdf?'\u{1F4C4}':'\u{1F4CE}';
       var label=isPdf?'View PDF':'View document';
-      h+='<a class="doc-link" href="'+E(en.file_url)+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
+      var vtype=isPdf?'pdf':'file';
+      h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
     }
   }
 
@@ -286,6 +304,41 @@ function pinUI(em){
     if(pin.length===4)load(pin);
   });
 }
+
+// ── Inline viewer (keeps recipients on share.pip.dog; hides raw storage URL) ──
+function openViewer(type,url,name){
+  var v=document.getElementById('viewer'),inner=document.getElementById('viewerInner');
+  var close='<button class="viewer-close" aria-label="Close" onclick="closeViewer()">\u2715</button>';
+  var dl='<a class="viewer-dl" href="'+E(url)+'" download="'+E(name||'file')+'" target="_blank" rel="noopener">Download</a>';
+  if(type==='image'){
+    inner.innerHTML=close+'<img src="'+E(url)+'" alt="'+E(name||'Photo')+'">'+dl;
+  }else if(type==='pdf'){
+    inner.innerHTML=close+'<iframe src="'+E(url)+'" title="'+E(name||'PDF')+'"></iframe>'+dl;
+  }else{
+    // Unknown file type — fall back to opening the file directly (rare path)
+    window.open(url,'_blank','noopener');return;
+  }
+  v.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeViewer(){
+  var v=document.getElementById('viewer'),inner=document.getElementById('viewerInner');
+  v.classList.remove('open');
+  inner.innerHTML='';
+  document.body.style.overflow='';
+}
+// Delegated click handler — intercept any link with data-view-type
+document.addEventListener('click',function(ev){
+  var a=ev.target.closest&&ev.target.closest('[data-view-type]');
+  if(!a)return;
+  ev.preventDefault();
+  openViewer(a.getAttribute('data-view-type'),a.getAttribute('data-view-url'),a.getAttribute('data-view-name'));
+});
+// Close on overlay click or Esc key
+document.addEventListener('click',function(ev){
+  if(ev.target&&ev.target.id==='viewer')closeViewer();
+});
+document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeViewer()});
 
 async function load(pin){
   if(!TK){err('\u{1F615}','Invalid Link','This share link is missing a token.');return}
