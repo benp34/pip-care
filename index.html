@@ -63,11 +63,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .entry-date{font-size:12px;color:#9CA3AF;font-weight:400}
 .entry-link{color:#2563EB;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px}
 .entry-link:hover{text-decoration:underline}
-/* Photo thumbnail — matches in-app 80x80 rounded */
-.photo-thumb{display:inline-block;margin-top:6px;text-decoration:none;-webkit-tap-highlight-color:transparent;cursor:zoom-in}
-.photo-thumb img{width:80px;height:80px;border-radius:8px;object-fit:cover;display:block;border:1px solid rgba(0,0,0,.05)}
-.photo-thumb:hover img{opacity:.92}
-
 /* Inline viewer — keeps recipients on share.pip.dog, never leaks the storage URL */
 .viewer{position:fixed;inset:0;background:rgba(17,24,39,.92);display:none;z-index:1000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
 .viewer.open{display:flex}
@@ -216,18 +211,16 @@ function FE(en,st,bc,bg){
   // never see the raw storage URL in the address bar.
   if(en.file_url){
     var isImg=en.file_type&&(en.file_type.includes('image')||en.file_type.includes('heic')||en.file_type.includes('jpg')||en.file_type.includes('png'));
+    var isPdf=en.file_type&&en.file_type.includes('pdf');
     var safeUrl=E(en.file_url);
     var safeName=E(en.title||'file');
-    if(isImg){
-      // Real thumbnail — matches in-app 80x80 rounded preview
-      h+='<a class="photo-thumb" href="'+safeUrl+'" data-view-type="image" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><img src="'+safeUrl+'" alt="Photo" loading="lazy"></a>';
-    }else{
-      var isPdf=en.file_type&&en.file_type.includes('pdf');
-      var icon=isPdf?'\u{1F4C4}':'\u{1F4CE}';
-      var label=isPdf?'View PDF':'View document';
-      var vtype=isPdf?'pdf':'file';
-      h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
-    }
+    // Mirror in-app approach — consistent icon + label chip for all attachment types
+    // (no inline image thumbnails). Tap opens the inline viewer.
+    var icon, label, vtype;
+    if(isImg){      icon='\u{1F5BC}\uFE0F'; label='View image';    vtype='image';
+    }else if(isPdf){icon='\u{1F4C4}';       label='View PDF';      vtype='pdf';
+    }else{          icon='\u{1F4CE}';       label='View document'; vtype='file'; }
+    h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
   }
 
   h+='</div>';
