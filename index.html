@@ -48,15 +48,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 
 /* Section card */
 .section{background:var(--card);border-radius:16px;margin-bottom:12px;border-left:4px solid #D1D5DB;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);overflow:hidden}
-.section-header{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #F3F4F6}
+.section-header{display:flex;align-items:center;gap:10px;padding:16px 18px}
 .section-emoji{font-size:22px;line-height:1}
 .section-title{font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;flex:1;color:var(--text)}
-.entry-count{background:#F3F4F6;color:var(--text-sub);font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px}
-.section-body{padding:4px 18px 12px}
+.entry-count{background:rgba(255,255,255,.6);color:var(--text-sub);font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px}
+.section-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
 
-/* Entry */
-.entry{padding:14px 0;border-bottom:1px solid #F9FAFB}
-.entry:last-child{border-bottom:none}
+/* Entry — tinted card with colored left border, matching in-app */
+.entry{padding:12px 14px;border-radius:10px;border-left:3px solid #D1D5DB}
 .entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .entry-title{font-size:14px;font-weight:600;color:var(--text)}
 .entry-content{font-size:13px;color:#4B5563;line-height:1.7;margin-top:4px}
@@ -122,10 +121,17 @@ function D(d){try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',m
 
 function BC(t){t=t.toLowerCase();if(t.includes('vet')||t.includes('vaccination')||t.includes('microchip'))return'#93C5FD';if(t.includes('medication')||t.includes('allerg')||t.includes('symptom'))return'#67E8F9';if(t.includes('diet'))return'#FF8C7A';if(t.includes('groom'))return'#F9A8D4';if(t.includes('training')||t.includes('quirk'))return'#22C55E';if(t.includes('potty'))return'#F472B6';if(t.includes('household'))return'#FB923C';if(t.includes('exercise'))return'#A3E635';if(t.includes('sleep'))return'#A855F7';if(t.includes('document')||t.includes('contact'))return'#C084FC';return'#D1D5DB'}
 
+// Soft tint for section header + entry cards (matches in-app bgStart palette).
+function BG(t){t=t.toLowerCase();if(t.includes('vet')||t.includes('vaccination')||t.includes('microchip'))return'#EFF6FF';if(t.includes('medication')||t.includes('allerg')||t.includes('symptom'))return'#ECFEFF';if(t.includes('diet'))return'#FFF7ED';if(t.includes('groom'))return'#FDF2F8';if(t.includes('training')||t.includes('quirk'))return'#F0FDF4';if(t.includes('potty'))return'#FDF2F8';if(t.includes('household'))return'#FFF7ED';if(t.includes('exercise'))return'#F7FEE7';if(t.includes('sleep'))return'#FAF5FF';if(t.includes('document')||t.includes('contact'))return'#FAF5FF';return'#F9FAFB'}
+
 function SE(t){t=t.toLowerCase();if(t.includes('vaccination'))return'\u{1F489}';if(t.includes('contact'))return'\u{1F465}';if(t.includes('vet'))return'\u{1F3E5}';if(t.includes('medication'))return'\u{1F48A}';if(t.includes('allerg'))return'\u26A0\uFE0F';if(t.includes('diet'))return'\u{1F37D}\uFE0F';if(t.includes('groom'))return'\u2702\uFE0F';if(t.includes('symptom'))return'\u{1F321}\uFE0F';if(t.includes('document'))return'\u{1F4C4}';if(t.includes('exercise'))return'\u{1F3C3}';if(t.includes('sleep'))return'\u{1F634}';if(t.includes('training'))return'\u{1F393}';if(t.includes('quirk'))return'\u26A1';if(t.includes('household'))return'\u{1F3E0}';if(t.includes('potty'))return'\u{1F6BD}';return'\u{1F4CC}'}
 
-function FE(en,st){
-  var t=(st||'').toLowerCase(),h='<div class="entry">';
+function FE(en,st,bc,bg){
+  var t=(st||'').toLowerCase();
+  var style='';
+  if(bc)style+='border-left-color:'+bc+';';
+  if(bg)style+='background:'+bg+';';
+  var h='<div class="entry"'+(style?' style="'+style+'"':'')+'>';
   h+='<div class="entry-header"><span class="entry-title">'+E(en.title)+'</span>';
   if(en.entry_date)h+='<span class="entry-date">'+D(en.entry_date)+'</span>';
   h+='</div>';
@@ -214,8 +220,9 @@ function render(data){
     h+='<div class="section"><div class="section-body"><div class="empty">No care plan entries yet.</div></div></div>';
   }else{
     data.sections.forEach(function(s){
-      h+='<div class="section" style="border-left-color:'+BC(s.title)+'">';
-      h+='<div class="section-header"><span class="section-emoji">'+(s.emoji||SE(s.title))+'</span>';
+      var bc=BC(s.title),bg=BG(s.title);
+      h+='<div class="section" style="border-left-color:'+bc+'">';
+      h+='<div class="section-header" style="background:'+bg+'"><span class="section-emoji">'+(s.emoji||SE(s.title))+'</span>';
       h+='<span class="section-title">'+E(s.title)+'</span>';
       if((!s.type||s.type==='data')&&s.entries&&s.entries.length)h+='<span class="entry-count">'+s.entries.length+'</span>';
       h+='</div><div class="section-body">';
@@ -226,7 +233,7 @@ function render(data){
         // Data-driven section (default for legacy payloads without `type`).
         var es=s.entries||[];
         if(!es.length)h+='<div class="empty">No entries yet</div>';
-        else es.forEach(function(e){h+=FE(e,s.title)});
+        else es.forEach(function(e){h+=FE(e,s.title,bc,bg)});
       }
       h+='</div></div>';
     });
