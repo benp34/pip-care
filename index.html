@@ -55,14 +55,18 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .section-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
 
 /* Entry — tinted card with colored left border, matching in-app */
-.entry{padding:12px 14px;border-radius:10px;border-left:3px solid #D1D5DB}
-.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.entry-title{font-size:14px;font-weight:600;color:var(--text)}
-.entry-content{font-size:13px;color:#4B5563;line-height:1.7;margin-top:4px}
-.entry-label{font-weight:600;color:#374151;font-size:12px}
-.entry-date{font-size:11px;color:var(--text-light);font-weight:500}
+.entry{padding:12px;border-radius:10px;border-left:3px solid #D1D5DB}
+.entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.entry-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
+.entry-content{font-size:12px;color:#374151;line-height:1.5;margin-top:3px}
+.entry-label{font-weight:500;color:#6B7280;font-size:12px}
+.entry-date{font-size:12px;color:#9CA3AF;font-weight:400}
 .entry-link{color:#2563EB;text-decoration:none;font-weight:500;display:inline-flex;align-items:center;gap:4px}
 .entry-link:hover{text-decoration:underline}
+/* Photo thumbnail — matches in-app 80x80 rounded */
+.photo-thumb{display:inline-block;margin-top:6px;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.photo-thumb img{width:80px;height:80px;border-radius:8px;object-fit:cover;display:block;border:1px solid rgba(0,0,0,.05)}
+.photo-thumb:hover img{opacity:.92}
 .severity-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600}
 .severity-severe{background:#FEE2E2;color:#DC2626}
 .severity-moderate{background:#FFF7ED;color:#EA580C}
@@ -132,8 +136,10 @@ function FE(en,st,bc,bg){
   if(bc)style+='border-left-color:'+bc+';';
   if(bg)style+='background:'+bg+';';
   var h='<div class="entry"'+(style?' style="'+style+'"':'')+'>';
+  // Diet + Grooming don't need dates — matches in-app which hides them.
+  var showDate=!(t.includes('diet')||t.includes('groom'));
   h+='<div class="entry-header"><span class="entry-title">'+E(en.title)+'</span>';
-  if(en.entry_date)h+='<span class="entry-date">'+D(en.entry_date)+'</span>';
+  if(showDate&&en.entry_date)h+='<span class="entry-date">'+D(en.entry_date)+'</span>';
   h+='</div>';
 
   if(en.content){try{
@@ -191,13 +197,18 @@ function FE(en,st,bc,bg){
     }else{h+='<div class="entry-content">'+E(String(p))+'</div>'}
   }catch(e){h+='<div class="entry-content">'+E(en.content)+'</div>'}}
 
-  // Document / photo link
+  // Photo thumbnail (images) or compact doc link (PDFs / other files)
   if(en.file_url){
     var isImg=en.file_type&&(en.file_type.includes('image')||en.file_type.includes('heic')||en.file_type.includes('jpg')||en.file_type.includes('png'));
-    var isPdf=en.file_type&&en.file_type.includes('pdf');
-    var icon=isImg?'\u{1F5BC}\uFE0F':isPdf?'\u{1F4C4}':'\u{1F4CE}';
-    var label=isImg?'View photo':isPdf?'View PDF':'View document';
-    h+='<a class="doc-link" href="'+E(en.file_url)+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
+    if(isImg){
+      // Real thumbnail — matches in-app 80x80 rounded preview
+      h+='<a class="photo-thumb" href="'+E(en.file_url)+'" target="_blank" rel="noopener"><img src="'+E(en.file_url)+'" alt="Photo" loading="lazy"></a>';
+    }else{
+      var isPdf=en.file_type&&en.file_type.includes('pdf');
+      var icon=isPdf?'\u{1F4C4}':'\u{1F4CE}';
+      var label=isPdf?'View PDF':'View document';
+      h+='<a class="doc-link" href="'+E(en.file_url)+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
+    }
   }
 
   h+='</div>';
