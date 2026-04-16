@@ -58,8 +58,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .entry-count{background:rgba(255,255,255,.6);color:var(--text-sub);font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px}
 .section-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
 
-/* Entry — tinted card with colored left border, matching in-app */
-.entry{padding:12px;border-radius:10px;border-left:3px solid #D1D5DB}
+/* Entry — faint grey card with a coloured left border that picks up the section's accent.
+   Section header keeps its tint; each entry stays neutral so the section's colour identity
+   is carried only by the border strip (matches the in-app Care Profile design). */
+.entry{padding:12px;border-radius:10px;border-left:3px solid #D1D5DB;background:#F9FAFB}
 .entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 .entry-title{font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:var(--text)}
 .entry-content{font-size:12px;color:#374151;line-height:1.5;margin-top:3px}
@@ -274,7 +276,9 @@ function render(data){
         // Data-driven section (default for legacy payloads without `type`).
         var es=s.entries||[];
         if(!es.length)h+='<div class="empty">No entries yet</div>';
-        else es.forEach(function(e){h+=FE(e,s.title,bc,bg)});
+        // Pass only the border colour (bc) to FE — entries use a neutral grey bg;
+        // only the section header carries the tint (bg).
+        else es.forEach(function(e){h+=FE(e,s.title,bc,null)});
       }
       h+='</div></div>';
     });
@@ -323,8 +327,10 @@ function pinUI(em){
 // zoomed-in content and hidden controls. Rendering ourselves fixes both.
 function openViewer(type,url,name){
   var v=document.getElementById('viewer'),inner=document.getElementById('viewerInner'),dl=document.getElementById('viewerDl');
+  // Wire the download button to a JS handler — the `download` HTML attr is
+  // ignored when the source sends Content-Disposition: inline (Supabase does).
   dl.setAttribute('href',url);
-  dl.setAttribute('download',name||'file');
+  dl.onclick=function(ev){ev.preventDefault();forceDownload(url,name||'file');return false};
   if(type==='image'){
     inner.innerHTML='<img src="'+E(url)+'" alt="'+E(name||'Photo')+'">';
   }else if(type==='pdf'){
@@ -345,6 +351,29 @@ function closeViewer(){
 }
 // Wire the static close button once — avoids re-binding on every openViewer.
 document.getElementById('viewerClose').addEventListener('click',closeViewer);
+
+// Force-download a remote file. Fetches the bytes, wraps them in a blob, and
+// synthesizes a click on a hidden anchor — this bypasses Content-Disposition:
+// inline which Supabase storage sends by default. On iOS Safari where blob
+// downloads are unreliable, falls back to opening the URL in a new tab so the
+// user can long-press → Save.
+async function forceDownload(url,filename){
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if(isIOS){window.open(url,'_blank','noopener');return}
+  try{
+    var res=await fetch(url);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var blob=await res.blob();
+    var objUrl=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=objUrl;a.download=filename||'file';
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(objUrl);a.remove()},200);
+  }catch(e){
+    // Fallback — opening in a new tab at least gets the file in front of the user.
+    window.open(url,'_blank','noopener');
+  }
+}
 
 // Render every PDF page into a fit-width canvas inside #pdfPages.
 // Canvases are rendered at devicePixelRatio for crispness on retina displays,
