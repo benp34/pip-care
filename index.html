@@ -217,10 +217,10 @@ function FE(en,st,bc,bg){
     // Mirror in-app approach — consistent icon + label chip for all attachment types
     // (no inline image thumbnails). Tap opens the inline viewer.
     var icon, label, vtype;
-    if(isImg){      icon='\u{1F5BC}\uFE0F'; label='View image';    vtype='image';
-    }else if(isPdf){icon='\u{1F4C4}';       label='View PDF';      vtype='pdf';
-    }else{          icon='\u{1F4CE}';       label='View document'; vtype='file'; }
-    h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
+    if(isImg){      icon='\u{1F5BC}\uFE0F'; label='Tap to view image';    vtype='image';
+    }else if(isPdf){icon='\u{1F4C4}';       label='Tap to view document'; vtype='pdf';
+    }else{          icon='\u{1F4CE}';       label='Tap to view document'; vtype='file'; }
+    h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span></a>';
   }
 
   h+='</div>';
