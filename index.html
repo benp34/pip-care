@@ -20,9 +20,6 @@
 <meta name="twitter:image" content="https://share.pip.dog/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
-<!-- PDF.js — used to render first-page thumbnails for PDF attachments -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script>if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 <style>
 :root{--purple:#A855F7;--purple-dark:#7C3AED;--bg:#FAFAF9;--card:#fff;--text:#1F2937;--text-sub:#6B7280;--text-light:#9CA3AF;--border:#E5E7EB;--green:#22C55E}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -70,11 +67,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .photo-thumb{display:inline-block;margin-top:6px;text-decoration:none;-webkit-tap-highlight-color:transparent;cursor:zoom-in}
 .photo-thumb img{width:80px;height:80px;border-radius:8px;object-fit:cover;display:block;border:1px solid rgba(0,0,0,.05)}
 .photo-thumb:hover img{opacity:.92}
-/* PDF thumbnail — first page rendered via pdf.js */
-.pdf-thumb{position:relative;width:80px;height:80px;display:inline-block;margin-top:6px;text-decoration:none;-webkit-tap-highlight-color:transparent;cursor:zoom-in;background:#F3E8FF;border-radius:8px;border:1px solid rgba(0,0,0,.05);overflow:hidden;vertical-align:top}
-.pdf-thumb canvas{display:block;width:100%;height:100%;object-fit:cover;background:#fff}
-.pdf-thumb::after{content:'PDF';position:absolute;right:4px;bottom:4px;font-size:9px;font-weight:700;color:#fff;background:rgba(109,40,217,.9);padding:2px 5px;border-radius:4px;letter-spacing:.3px;pointer-events:none}
-.pdf-thumb.loading::before{content:'\u25CB';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#A855F7;font-size:24px}
 
 /* Inline viewer — keeps recipients on share.pip.dog, never leaks the storage URL */
 .viewer{position:fixed;inset:0;background:rgba(17,24,39,.92);display:none;z-index:1000;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(8px)}
@@ -231,13 +223,10 @@ function FE(en,st,bc,bg){
       h+='<a class="photo-thumb" href="'+safeUrl+'" data-view-type="image" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><img src="'+safeUrl+'" alt="Photo" loading="lazy"></a>';
     }else{
       var isPdf=en.file_type&&en.file_type.includes('pdf');
-      if(isPdf){
-        // Canvas placeholder — post-render script populates it via pdf.js
-        h+='<a class="pdf-thumb loading" href="'+safeUrl+'" data-view-type="pdf" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" data-pdf-url="'+safeUrl+'" target="_blank" rel="noopener"><canvas></canvas></a>';
-      }else{
-        // Unknown file type — keep the compact doc link
-        h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="file" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">\u{1F4CE}</span><span class="doc-text">View document</span><span class="doc-action">Open \u2192</span></a>';
-      }
+      var icon=isPdf?'\u{1F4C4}':'\u{1F4CE}';
+      var label=isPdf?'View PDF':'View document';
+      var vtype=isPdf?'pdf':'file';
+      h+='<a class="doc-link" href="'+safeUrl+'" data-view-type="'+vtype+'" data-view-url="'+safeUrl+'" data-view-name="'+safeName+'" target="_blank" rel="noopener"><span class="doc-icon">'+icon+'</span><span class="doc-text">'+label+'</span><span class="doc-action">Open \u2192</span></a>';
     }
   }
 
@@ -289,8 +278,6 @@ function render(data){
   // Update OG title dynamically (won't affect already-shared previews but helps bookmarks)
   var ogTitle=document.querySelector('meta[property="og:title"]');
   if(ogTitle)ogTitle.content='\u{1F43E} '+d.name+"'s Care Profile";
-  // Async-populate PDF thumbnails — runs after DOM is in place
-  setTimeout(renderPdfThumbs,0);
 }
 
 function err(icon,title,msg){
@@ -317,35 +304,6 @@ function pinUI(em){
     var pin=Array.from(ins).map(function(x){return x.value}).join('');
     if(pin.length===4)load(pin);
   });
-}
-
-// ── PDF first-page thumbnails via pdf.js ──
-// Scans any .pdf-thumb[data-pdf-url] element that hasn't been rendered yet,
-// fetches the PDF, renders the first page into the card's <canvas>. Fails
-// silently — the element is still tappable to open the full PDF inline.
-async function renderPdfThumbs(){
-  if(!window.pdfjsLib)return;
-  var els=document.querySelectorAll('.pdf-thumb[data-pdf-url]:not([data-rendered])');
-  for(var i=0;i<els.length;i++){
-    (function(el){
-      el.setAttribute('data-rendered','true');
-      var url=el.getAttribute('data-pdf-url');
-      var canvas=el.querySelector('canvas');
-      if(!canvas||!url)return;
-      pdfjsLib.getDocument({url:url,disableRange:true,disableStream:true}).promise
-        .then(function(pdf){return pdf.getPage(1)})
-        .then(function(page){
-          var viewport=page.getViewport({scale:1});
-          var targetW=160,targetH=160;// 2x for retina inside an 80px box
-          var scale=Math.min(targetW/viewport.width,targetH/viewport.height);
-          var scaled=page.getViewport({scale:scale});
-          canvas.width=scaled.width;canvas.height=scaled.height;
-          return page.render({canvasContext:canvas.getContext('2d'),viewport:scaled}).promise;
-        })
-        .then(function(){el.classList.remove('loading')})
-        .catch(function(e){console.warn('[pdf-thumb]',e&&e.message);el.classList.remove('loading')});
-    })(els[i]);
-  }
 }
 
 // ── Inline viewer (keeps recipients on share.pip.dog; hides raw storage URL) ──
