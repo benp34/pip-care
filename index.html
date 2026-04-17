@@ -143,8 +143,8 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 var API='https://wsihkqgpjhrgwuzsxchy.supabase.co/functions/v1/share';
 var params=new URLSearchParams(window.location.search);
 var TK=params.get('token');
-// Personalise loading text if we've seen this token before
-(function(){var n=TK&&localStorage.getItem('pip_name_'+TK);var el=document.getElementById('loadingText');if(n&&el)el.textContent='Loading '+n+"'s care profile";}());
+// Personalise loading text — URL param takes priority (first load), then localStorage (repeat visit)
+(function(){var n=(TK&&params.get('name'))||( TK&&localStorage.getItem('pip_name_'+TK));if(n)n=decodeURIComponent(n);var el=document.getElementById('loadingText');if(n&&el)el.textContent='Loading '+n+"'s care profile";}());
 
 function E(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function D(d){try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d||''}}
@@ -302,8 +302,7 @@ function render(data){
   }
 
   h+='</div>';
-  h+='<div class="footer"><p>This care profile updates live.<br>Refresh to see the latest info.</p>';
-  h+='<div class="footer-badge">\u{1F43E} Powered by Pip</div></div>';
+  h+='<div style="text-align:center;padding:24px 24px 40px;color:#C4C9D4;font-size:11px;font-family:Inter,sans-serif">Shared via Pip &middot; Refreshes live</div>';
 
   document.getElementById('app').innerHTML=h;
   document.title=d.name+"'s Care Profile \u2014 Pip";
