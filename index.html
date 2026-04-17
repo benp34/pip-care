@@ -41,10 +41,12 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .pip-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(168,85,247,.2))}
 /* Heading */
 .dog-name{font-family:'Quicksand',sans-serif;font-size:26px;font-weight:700;margin:14px 0 6px;letter-spacing:-.3px;color:#1F2937}
-/* "Live profile link" line */
+/* "Shared live via Pip" line */
 .dog-subtitle{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:#9CA3AF;margin-bottom:14px}
+.pip-inline-logo{height:13px;width:auto;vertical-align:middle;filter:brightness(0) saturate(100%) invert(13%) sepia(60%) saturate(800%) hue-rotate(245deg) brightness(85%)}
 /* Stats card */
-.stats-card{display:flex;background:#fff;border-radius:20px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);margin:0 0 12px;overflow:hidden}
+.stats-card{display:flex;background:#fff;border-radius:20px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);margin:0 0 14px;overflow:hidden}
+.stats-gap{height:14px}
 .stat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 8px;gap:2px}
 .stat+.stat{border-left:1px solid #F9FAFB}
 .stat-value{font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;color:#1F2937;line-height:1.2}
@@ -263,14 +265,14 @@ function render(data){
     h+='<div class="pip-mascot"><img src="pip-jumping.png" alt="Pip"></div>';
   }
   h+='<div class="dog-name">'+E(d.name)+'</div>';
-  h+='<div class="dog-subtitle"><span class="live-dot"></span>Live profile link</div>';
-  // Stats card — breed / age / weight with dividers
+  h+='<div class="dog-subtitle"><span class="live-dot"></span>Shared live via <img class="pip-inline-logo" src="pip-logo-white.png" alt="Pip"></div>';
+  h+='</div><div class="container">';
+  // Stats card — inside container so spacing is consistent with section cards
   var stats=[];
   if(d.breed)stats.push('<div class="stat"><span class="stat-value">'+E(d.breed)+'</span><span class="stat-label">Breed</span></div>');
   if(d.age)stats.push('<div class="stat"><span class="stat-value">'+E(d.age)+'</span><span class="stat-label">Age</span></div>');
   if(d.weight)stats.push('<div class="stat"><span class="stat-value">'+E(d.weight)+'</span><span class="stat-label">Weight</span></div>');
   if(stats.length)h+='<div class="stats-card">'+stats.join('')+'</div>';
-  h+='</div><div class="container">';
 
   if(!data.sections||!data.sections.length){
     h+='<div class="section"><div class="section-body"><div class="empty">No care plan entries yet.</div></div></div>';
