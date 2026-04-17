@@ -30,22 +30,23 @@
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* Header */
-.header{background:linear-gradient(160deg,#A855F7 0%,#7C3AED 55%,#6D28D9 100%);padding:52px 24px 60px;text-align:center;color:#fff;position:relative;overflow:hidden}
-.header::before{content:'';position:absolute;top:-80px;right:-80px;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.05)}
-.header::after{content:'';position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:120%;height:60px;background:var(--bg);border-radius:50% 50% 0 0}
+.header{background:linear-gradient(180deg,#D4B0FD 0%,#DBBEF8 12%,#E4CEF3 28%,#ECDDEE 45%,#F3ECE9 65%,#F6F2EA 82%,#FAFAF9 100%);padding:48px 24px 0;text-align:center;color:#1F2937;position:relative;overflow:hidden;border-radius:0 0 32px 32px}
 /* Pip logo */
-.pip-logo{margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
-.pip-logo img{height:28px;width:auto;object-fit:contain;filter:drop-shadow(0 1px 4px rgba(0,0,0,.15))}
+.pip-logo{margin:0 auto 10px;display:flex;align-items:center;justify-content:center}
+.pip-logo img{height:36px;width:auto;object-fit:contain;filter:brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(1200%) hue-rotate(255deg) brightness(90%)}
 /* Live badge */
-.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:4px 11px;margin-bottom:22px}
+.live-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);border-radius:12px;padding:4px 11px;margin-bottom:16px;color:#7C3AED}
 .live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.4)}50%{opacity:.6;box-shadow:0 0 0 4px rgba(34,197,94,0)}}
+/* Mascot */
+.pip-mascot{width:90px;height:90px;margin:0 auto 0;animation:float 3s ease-in-out infinite}
+.pip-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 16px rgba(168,85,247,.25))}
 /* Avatar */
-.avatar-ring{width:96px;height:96px;border-radius:50%;padding:3px;background:rgba(255,255,255,.25);margin:0 auto 16px;box-shadow:0 4px 20px rgba(0,0,0,.18)}
-.avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;background:rgba(255,255,255,.15)}
-.avatar-placeholder{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.15);font-size:36px}
-.dog-name{font-family:'Quicksand',sans-serif;font-size:30px;font-weight:700;margin-bottom:5px;letter-spacing:-.5px}
-.dog-info{font-size:13px;opacity:.8;font-weight:500}
+.avatar-ring{width:90px;height:90px;border-radius:50%;padding:3px;background:linear-gradient(135deg,rgba(168,85,247,.35),rgba(255,255,255,.6));margin:0 auto 14px;box-shadow:0 4px 16px rgba(168,85,247,.2)}
+.avatar{width:84px;height:84px;border-radius:50%;object-fit:cover;display:block;background:#EDE9FE}
+.avatar-placeholder{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#EDE9FE;font-size:36px}
+.dog-name{font-family:'Quicksand',sans-serif;font-size:30px;font-weight:700;margin-bottom:5px;letter-spacing:-.5px;color:#1F2937}
+.dog-info{font-size:13px;color:#6B7280;font-weight:500;margin-bottom:28px}
 
 /* Container */
 .container{max-width:500px;margin:-24px auto 0;padding:0 16px;position:relative;z-index:1}
@@ -252,6 +253,7 @@ function render(data){
   var h='<div class="header">';
   h+='<div class="pip-logo"><img src="pip-logo-white.png" alt="Pip"></div>';
   h+='<div class="live-badge"><span class="live-dot"></span>live</div>';
+  h+='<div class="pip-mascot"><img src="pip-jumping.png" alt="Pip mascot"></div>';
   h+='<div class="avatar-ring">';
   if(d.photo_url)h+='<img class="avatar" src="'+E(d.photo_url)+'" alt="'+E(d.name)+'">';
   else h+='<div class="avatar-placeholder">\uD83D\uDC36</div>';
