@@ -8,7 +8,7 @@
 <title>Care Profile — Pip</title>
 <meta property="og:type" content="website">
 <meta property="og:title" content="Care Profile — shared via Pip">
-<meta property="og:description" content="View your pup's complete care profile including vet info, medications, diet &amp; more.">
+<meta property="og:description" content="View a complete care profile including vet info, medications, key documents, diet &amp; more — shared via Pip.">
 <meta property="og:url" content="https://share.pip.dog/">
 <meta property="og:image" content="https://share.pip.dog/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -16,7 +16,7 @@
 <meta property="og:image:alt" content="Pip — a shareable care profile for your dog">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Care Profile — shared via Pip">
-<meta name="twitter:description" content="View your pup's complete care profile including vet info, medications, diet &amp; more.">
+<meta name="twitter:description" content="View a complete care profile including vet info, medications, key documents, diet &amp; more — shared via Pip.">
 <meta name="twitter:image" content="https://share.pip.dog/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
@@ -111,7 +111,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .footer-badge{display:inline-flex;align-items:center;gap:8px;background:var(--card);border-radius:24px;padding:10px 20px;font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;color:var(--purple);box-shadow:0 2px 12px rgba(168,85,247,.12);margin-top:16px}
 
 /* Loading */
-.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;background:linear-gradient(180deg,#F5F3FF 0%,#EDE9FE 100%)}
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:40px;background:linear-gradient(180deg,#D4B0FD 0%,#DBBEF8 12%,#E4CEF3 28%,#ECDDEE 45%,#F3ECE9 65%,#FAFAF9 100%)}
 .loading-mascot{width:80px;height:80px;margin-bottom:20px;animation:float 2s ease-in-out infinite}
 .loading-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 16px rgba(168,85,247,.3))}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
@@ -137,12 +137,14 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 </style>
 </head>
 <body>
-<div id="app"><div class="loading"><div class="loading-mascot"><img src="pip-jumping.png" alt="Pip"></div><div class="loading-text">Loading care profile</div><div class="loading-sub">Fetching the latest data...</div><div class="loading-bar"></div></div></div>
-<div id="viewer" class="viewer" role="dialog" aria-modal="true"><button class="viewer-close" id="viewerClose" aria-label="Close">&#x2715;</button><div class="viewer-inner" id="viewerInner"></div></div>
+<div id="app"><div class="loading"><div class="loading-mascot"><img src="pip-jumping.png" alt="Pip"></div><div class="loading-text" id="loadingText">Loading care profile</div><div class="loading-sub">Fetching the latest data...</div><div class="loading-bar"></div></div></div>
+<div id="viewer" class="viewer" role="dialog" aria-modal="true"><button class="viewer-close" id="viewerClose" aria-label="Close">&#x2190;</button><div class="viewer-inner" id="viewerInner"></div></div>
 <script>
 var API='https://wsihkqgpjhrgwuzsxchy.supabase.co/functions/v1/share';
 var params=new URLSearchParams(window.location.search);
 var TK=params.get('token');
+// Personalise loading text if we've seen this token before
+(function(){var n=TK&&localStorage.getItem('pip_name_'+TK);var el=document.getElementById('loadingText');if(n&&el)el.textContent='Loading '+n+"'s care profile";}());
 
 function E(s){if(!s)return'';var d=document.createElement('div');d.textContent=s;return d.innerHTML}
 function D(d){try{return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}catch(e){return d||''}}
@@ -305,9 +307,16 @@ function render(data){
 
   document.getElementById('app').innerHTML=h;
   document.title=d.name+"'s Care Profile \u2014 Pip";
-  // Update OG title dynamically (won't affect already-shared previews but helps bookmarks)
+  if(TK)try{localStorage.setItem('pip_name_'+TK,d.name);}catch(e){}
+  // Personalise OG tags (affects bookmarks and re-shares after first load)
   var ogTitle=document.querySelector('meta[property="og:title"]');
-  if(ogTitle)ogTitle.content='\u{1F43E} '+d.name+"'s Care Profile";
+  if(ogTitle)ogTitle.content=d.name+"'s Care Profile";
+  var ogDesc=document.querySelector('meta[property="og:description"]');
+  if(ogDesc)ogDesc.content=d.name+"'s care profile \u2014 shared via Pip. View "+d.name+"'s complete care profile including vet info, medications, key documents, diet & more.";
+  var twTitle=document.querySelector('meta[name="twitter:title"]');
+  if(twTitle)twTitle.content=d.name+"'s Care Profile";
+  var twDesc=document.querySelector('meta[name="twitter:description"]');
+  if(twDesc)twDesc.content=d.name+"'s care profile \u2014 shared via Pip.";
 }
 
 function err(icon,title,msg){
