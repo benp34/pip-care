@@ -221,13 +221,17 @@ function FE(en,st,bc,bg){
         if(p.dosage)h+='<div><span class="entry-label">Dosage:</span> '+E(p.dosage)+'</div>';
         if(p.content||p.notes)h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(p.content||p.notes)+'</div>';
         h+='</div>';
+      }else if(t.includes('symptom')){
+        h+='<div class="entry-content">';
+        var sNotes=p.notes||p.content;
+        if(sNotes&&sNotes.trim().toLowerCase()!=='symptom')h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(sNotes)+'</div>';
+        h+='</div>';
       }else if(t.includes('document')){
         h+='<div class="entry-content">';
-        if(p.doc_category)h+='<div><span class="entry-label">Category:</span> '+E(p.doc_category)+'</div>';
         if(p.content||p.notes)h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(p.content||p.notes)+'</div>';
         h+='</div>';
       }else{
-        var pts=[],sk=['is_key','isKey','date','time'];
+        var pts=[],sk=['is_key','isKey','date','time','content','notes','doc_category','symptom'];
         for(var k in p){if(!p[k]||!String(p[k]).trim()||sk.indexOf(k)>=0)continue;var lb=k.replace(/_/g,' ').replace(/([A-Z])/g,' $1').replace(/^./,function(s){return s.toUpperCase()}).trim();pts.push('<span class="entry-label">'+E(lb)+':</span> '+E(String(p[k])))}
         if(pts.length)h+='<div class="entry-content">'+pts.join('<br/>')+'</div>';
       }
