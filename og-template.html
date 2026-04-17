@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{margin:0;padding:0;width:1200px;min-height:630px;background:linear-gradient(135deg,#A855F7 0%,#8B3FD9 35%,#7C3AED 60%,#6D28D9 100%)}
+.wrap{width:1200px;min-height:630px;font-family:'Quicksand',sans-serif;background:transparent;display:flex;align-items:center;justify-content:space-between;padding:0 80px;position:relative;overflow:hidden}
+/* Subtle orbs */
+.wrap::before{content:'';position:absolute;top:-80px;right:280px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.06)}
+.wrap::after{content:'';position:absolute;bottom:-100px;left:-60px;width:280px;height:280px;border-radius:50%;background:rgba(255,255,255,.05)}
+/* Left content */
+.left{flex:1;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:24px;padding:8px 18px;margin-bottom:28px}
+.badge-dot{width:8px;height:8px;background:#22C55E;border-radius:50%}
+.badge-text{font-size:16px;font-weight:600;color:rgba(255,255,255,.9);letter-spacing:.3px}
+.title{font-size:72px;font-weight:700;color:#fff;line-height:1.05;letter-spacing:-2px;margin-bottom:16px}
+.subtitle{font-size:24px;font-weight:600;color:rgba(255,255,255,.75);margin-bottom:32px}
+.sections{display:flex;gap:10px;flex-wrap:wrap}
+.tag{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:8px 16px;font-size:15px;font-weight:600;color:rgba(255,255,255,.85)}
+/* Right — mascot */
+.right{width:340px;display:flex;align-items:center;justify-content:center;z-index:1;flex-shrink:0}
+.right img{width:300px;height:300px;object-fit:contain;filter:drop-shadow(0 12px 40px rgba(0,0,0,.25))}
+/* Bottom brand */
+.brand{position:absolute;bottom:36px;left:80px;display:flex;align-items:center;gap:10px;z-index:1}
+.brand img{height:28px;width:auto;filter:brightness(0) invert(1);opacity:.7}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+<div class="left">
+  <div class="badge"><span class="badge-dot"></span><span class="badge-text">Live care profile</span></div>
+  <div class="title">Care Profile</div>
+  <div class="subtitle">Shared via Pip</div>
+  <div class="sections">
+    <span class="tag">🏥 Vet info</span>
+    <span class="tag">💊 Medications</span>
+    <span class="tag">🍽️ Diet</span>
+    <span class="tag">✂️ Grooming</span>
+    <span class="tag">📄 Documents</span>
+  </div>
+</div>
+<div class="right">
+  <img src="pip-jumping.png" alt="Pip">
+</div>
+<div class="brand">
+  <img src="pip-logo-white.png" alt="Pip">
+</div>
+</div>
+</body>
+</html>
