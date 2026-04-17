@@ -30,7 +30,7 @@
 body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* Header */
-.header{background:linear-gradient(180deg,#D4B0FD 0%,#DBBEF8 12%,#E4CEF3 28%,#ECDDEE 45%,#F3ECE9 65%,#F6F2EA 82%,#FAFAF9 100%);padding:52px 24px 32px;text-align:center;color:#1F2937;position:relative;overflow:hidden;border-radius:0 0 32px 32px}
+.header{background:linear-gradient(180deg,#D4B0FD 0%,#DBBEF8 12%,#E4CEF3 28%,#ECDDEE 45%,#F3ECE9 65%,#F6F2EA 82%,#FAFAF9 100%);padding:52px 24px 20px;text-align:center;color:#1F2937;position:relative;overflow:hidden;border-radius:0 0 32px 32px}
 /* Avatar ring — pulsating lilac glow */
 .avatar-ring{width:96px;height:96px;border-radius:50%;padding:3px;background:linear-gradient(135deg,rgba(168,85,247,.5),rgba(255,255,255,.8));margin:0 auto 0;animation:avatar-pulse 3s ease-in-out infinite}
 @keyframes avatar-pulse{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.12),0 4px 12px rgba(168,85,247,.1)}50%{box-shadow:0 0 0 5px rgba(168,85,247,.06),0 4px 14px rgba(168,85,247,.15)}}
@@ -41,12 +41,10 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .pip-mascot img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 12px rgba(168,85,247,.2))}
 /* Heading */
 .dog-name{font-family:'Quicksand',sans-serif;font-size:26px;font-weight:700;margin:14px 0 6px;letter-spacing:-.3px;color:#1F2937}
-/* "Live share via Pip" line */
-.dog-subtitle{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:#9CA3AF;margin-bottom:16px}
-.dog-subtitle .live-dot{margin-right:2px}
-.pip-inline-logo{height:14px;width:auto;vertical-align:middle;filter:brightness(0) saturate(100%) invert(13%) sepia(60%) saturate(800%) hue-rotate(245deg) brightness(85%);}
+/* "Live profile link" line */
+.dog-subtitle{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:#9CA3AF;margin-bottom:14px}
 /* Stats card */
-.stats-card{display:flex;background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.05);margin:0 0 28px;overflow:hidden}
+.stats-card{display:flex;background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.05);margin:0 0 12px;overflow:hidden}
 .stat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;gap:2px}
 .stat+.stat{border-left:1px solid #F3F4F6}
 .stat-value{font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;color:#1F2937;line-height:1.2}
@@ -265,7 +263,7 @@ function render(data){
     h+='<div class="pip-mascot"><img src="pip-jumping.png" alt="Pip"></div>';
   }
   h+='<div class="dog-name">'+E(d.name)+'</div>';
-  h+='<div class="dog-subtitle"><span class="live-dot"></span>Live share via <img class="pip-inline-logo" src="pip-logo-white.png" alt="Pip"></div>';
+  h+='<div class="dog-subtitle"><span class="live-dot"></span>Live profile link</div>';
   // Stats card — breed / age / weight with dividers
   var stats=[];
   if(d.breed)stats.push('<div class="stat"><span class="stat-value">'+E(d.breed)+'</span><span class="stat-label">Breed</span></div>');
