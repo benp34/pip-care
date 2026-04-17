@@ -33,7 +33,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .header{background:linear-gradient(180deg,#D4B0FD 0%,#DBBEF8 12%,#E4CEF3 28%,#ECDDEE 45%,#F3ECE9 65%,#F6F2EA 82%,#FAFAF9 100%);padding:52px 24px 32px;text-align:center;color:#1F2937;position:relative;overflow:hidden;border-radius:0 0 32px 32px}
 /* Avatar ring — pulsating lilac glow */
 .avatar-ring{width:96px;height:96px;border-radius:50%;padding:3px;background:linear-gradient(135deg,rgba(168,85,247,.5),rgba(255,255,255,.8));margin:0 auto 0;animation:avatar-pulse 3s ease-in-out infinite}
-@keyframes avatar-pulse{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.3),0 4px 16px rgba(168,85,247,.2)}50%{box-shadow:0 0 0 8px rgba(168,85,247,.1),0 4px 20px rgba(168,85,247,.35)}}
+@keyframes avatar-pulse{0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.12),0 4px 12px rgba(168,85,247,.1)}50%{box-shadow:0 0 0 5px rgba(168,85,247,.06),0 4px 14px rgba(168,85,247,.15)}}
 .avatar{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;background:#EDE9FE}
 .avatar-placeholder{width:90px;height:90px;border-radius:50%;object-fit:contain;display:block;background:#EDE9FE;padding:12px}
 /* Mascot */
@@ -44,7 +44,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 /* "Live share via Pip" line */
 .dog-subtitle{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:#9CA3AF;margin-bottom:16px}
 .dog-subtitle .live-dot{margin-right:2px}
-.pip-inline-logo{height:14px;width:auto;vertical-align:middle;filter:brightness(0) saturate(100%) invert(30%) sepia(80%) saturate(1200%) hue-rotate(255deg) brightness(90%);opacity:.7}
+.pip-inline-logo{height:14px;width:auto;vertical-align:middle;filter:brightness(0) saturate(100%) invert(13%) sepia(60%) saturate(800%) hue-rotate(245deg) brightness(85%);}
 /* Stats card */
 .stats-card{display:flex;background:#fff;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 12px rgba(0,0,0,.05);margin:0 0 28px;overflow:hidden}
 .stat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;gap:2px}
