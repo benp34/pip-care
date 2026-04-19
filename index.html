@@ -59,7 +59,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .container{max-width:500px;margin:-24px auto 0;padding:0 16px;position:relative;z-index:1}
 
 /* Section card */
-.section{background:var(--card);border-radius:16px;margin-bottom:12px;border-left:4px solid #D1D5DB;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);overflow:hidden}
+.section{background:var(--card);border-radius:16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,.04),0 4px 12px rgba(0,0,0,.04);overflow:hidden}
 .section-header{display:flex;align-items:center;gap:10px;padding:16px 18px}
 .section-emoji{font-size:22px;line-height:1}
 .section-title{font-family:'Quicksand',sans-serif;font-size:16px;font-weight:700;flex:1;color:var(--text)}
@@ -287,7 +287,7 @@ function render(data){
   }else{
     data.sections.forEach(function(s){
       var bc=BC(s.title),bg=BG(s.title);
-      h+='<div class="section" style="border-left-color:'+bc+'">';
+      h+='<div class="section">';
       h+='<div class="section-header" style="background:'+bg+'"><span class="section-emoji">'+(s.emoji||SE(s.title))+'</span>';
       h+='<span class="section-title">'+E(s.title)+'</span>';
       if((!s.type||s.type==='data')&&s.entries&&s.entries.length)h+='<span class="entry-count">'+s.entries.length+'</span>';
