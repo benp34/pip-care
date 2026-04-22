@@ -165,7 +165,7 @@ var ICON_MAIL='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill=
 function FE(en,st,bc,bg){
   var t=(st||'').toLowerCase();
   var style='';
-  if(bc)style+='border-left-color:'+bc+';';
+  if(bc)style+='border-left:3px solid '+bc+';';
   if(bg)style+='background:'+bg+';';
   var h='<div class="entry"'+(style?' style="'+style+'"':'')+'>';
   // Diet + Grooming don't need dates — matches in-app which hides them.
