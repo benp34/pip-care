@@ -47,9 +47,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 /* Stats card */
 .stats-card{display:flex;background:#fff;border-radius:20px;border:1.5px solid rgba(17,24,39,.12);box-shadow:0 4px 12px rgba(17,24,39,.08);margin:0 0 14px;overflow:hidden}
 .stats-gap{height:14px}
-.stat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 8px;gap:2px}
+.stat{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 8px;gap:2px;text-align:center}
 .stat+.stat{border-left:1px solid #F9FAFB}
-.stat-value{font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;color:#1F2937;line-height:1.2}
+.stat-value{font-family:'Quicksand',sans-serif;font-size:14px;font-weight:700;color:#1F2937;line-height:1.25;word-break:break-word;hyphens:auto}
+.stat-value.long{font-size:12px;line-height:1.3}
+.stat-value.empty{color:#D1D5DB;font-weight:600}
 .stat-label{font-size:11px;color:#9CA3AF;font-weight:500}
 /* Live dot */
 .live-dot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;vertical-align:middle}
@@ -280,11 +282,16 @@ function render(data){
   h+='<div class="dog-subtitle"><span class="live-dot"></span>Shared live via <img class="pip-inline-logo" src="pip-logo-white.png" alt="Pip"></div>';
   h+='</div><div class="container">';
   // Stats card — inside container so spacing is consistent with section cards
-  var stats=[];
-  if(d.breed)stats.push('<div class="stat"><span class="stat-value">'+E(d.breed)+'</span><span class="stat-label">Breed</span></div>');
-  if(d.age)stats.push('<div class="stat"><span class="stat-value">'+E(d.age)+'</span><span class="stat-label">Age</span></div>');
-  if(d.weight)stats.push('<div class="stat"><span class="stat-value">'+E(d.weight)+'</span><span class="stat-label">Weight</span></div>');
-  if(stats.length)h+='<div class="stats-card">'+stats.join('')+'</div>';
+  var statCell=function(val,label){
+    var has=val!=null&&String(val).trim().length>0;
+    var longCls=has&&String(val).length>18?' long':'';
+    var cls=has?'stat-value'+longCls:'stat-value empty';
+    var content=has?E(val):'—';
+    return '<div class="stat"><span class="'+cls+'">'+content+'</span><span class="stat-label">'+label+'</span></div>';
+  };
+  if(d.breed||d.age||d.weight){
+    h+='<div class="stats-card">'+statCell(d.breed,'Breed')+statCell(d.age,'Age')+statCell(d.weight,'Weight')+'</div>';
+  }
 
   if(!data.sections||!data.sections.length){
     h+='<div class="section"><div class="section-body"><div class="empty">No care plan entries yet.</div></div></div>';
