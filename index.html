@@ -19,7 +19,7 @@
 <meta name="twitter:description" content="View a complete care profile including vet info, medications, key documents, diet &amp; more — shared via Pip.">
 <meta name="twitter:image" content="https://share.pip.dog/og-image.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 <!-- PDF.js — renders PDFs in a canvas we control so we can fit-to-width on mobile -->
 <!-- (iOS Safari's native PDF renderer ignores URL fragments and opens at 100% zoom). -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -27,7 +27,7 @@
 <style>
 :root{--purple:#A855F7;--purple-dark:#7C3AED;--bg:#FAFAF9;--card:#fff;--text:#1F2937;--text-sub:#6B7280;--text-light:#9CA3AF;--border:#E5E7EB;--green:#22C55E}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
+body{font-family:'Nunito',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* Header */
 .header{background:linear-gradient(180deg,#E6D5FB 0%,#EDE0FB 12%,#F1E8FA 28%,#F5EFF8 45%,#F8F4FA 62%,#FAFAF9 78%,#FAFAF9 100%);padding:40px 24px 16px;text-align:center;color:#1F2937;position:relative;overflow:hidden;border-radius:0 0 28px 28px}
@@ -92,7 +92,7 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 /* PDF canvas container — scrolls vertically, pages extend to viewport edges */
 .pdf-pages{width:100%;height:100%;overflow-y:auto;overflow-x:hidden;padding:64px 0 env(safe-area-inset-bottom);-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:center;gap:8px;background:#1F2937}
 .pdf-pages canvas{width:100%;max-width:100vw;height:auto;background:#fff;display:block}
-.pdf-loading{color:#fff;font-family:'Inter',sans-serif;font-size:14px;opacity:.85;padding:24px}
+.pdf-loading{color:#fff;font-family:'Nunito',sans-serif;font-size:14px;opacity:.85;padding:24px}
 .severity-badge{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:600}
 .severity-severe{background:#FEE2E2;color:#DC2626}
 .severity-moderate{background:#FFF7ED;color:#EA580C}
@@ -101,11 +101,11 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg)
 .med-status-active{background:#DCFCE7;color:#16A34A}
 .med-status-inactive{background:#F3F4F6;color:#6B7280}
 /* Tap-to-view link — matches in-app: small inline icon + purple text, no box */
-.tap-view{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;color:#9333EA;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.tap-view{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:500;color:#9333EA;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .tap-view svg{width:14px;height:14px;flex-shrink:0}
 .tap-view:hover{text-decoration:underline}
 .empty{font-size:13px;color:var(--text-light);font-style:italic;padding:12px 0}
-.free-text{font-family:'Inter',sans-serif;font-size:13px;color:#374151;line-height:1.5;padding:4px 0;white-space:pre-wrap;word-break:break-word}
+.free-text{font-family:'Nunito',sans-serif;font-size:13px;color:#374151;line-height:1.5;padding:4px 0;white-space:pre-wrap;word-break:break-word}
 .meal-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0}
 .meal-name{font-size:13px;font-weight:500;color:var(--text)}
 .meal-time{font-size:12px;color:var(--text-light);font-weight:500}
@@ -328,7 +328,7 @@ function render(data){
   }
 
   h+='</div>';
-  h+='<div style="text-align:center;padding:24px 24px 40px;color:#C4C9D4;font-size:11px;font-family:Inter,sans-serif">Shared via Pip &middot; Refreshes live</div>';
+  h+='<div style="text-align:center;padding:24px 24px 40px;color:#C4C9D4;font-size:11px;font-family:Nunito,sans-serif">Shared via Pip &middot; Refreshes live</div>';
 
   document.getElementById('app').innerHTML=h;
   document.title=d.name+"'s Care Profile \u2014 Pip";
