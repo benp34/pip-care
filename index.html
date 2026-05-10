@@ -194,7 +194,7 @@ function FE(en,st,bc,bg){
       }else if(t.includes('allerg')){
         h+='<div class="entry-content">';
         if(p.severity){var cls=p.severity==='Severe'?'severe':p.severity==='Moderate'?'moderate':'mild';h+='<span class="severity-badge severity-'+cls+'">'+E(p.severity)+'</span> '}
-        if(p.reaction)h+='<div style="margin-top:4px"><span class="entry-label">Reaction:</span> '+E(p.reaction)+'</div>';
+        if(p.reaction)h+='<div style="margin-top:4px"><span class="entry-label">Signs / Symptoms:</span> '+E(p.reaction)+'</div>';
         // Skip notes that are just the literal placeholder-bait word 'Treatment' (users
         // occasionally typed it thinking it was a required label).
         var allergyNotes=p.content||p.notes;
