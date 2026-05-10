@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["WX33VG5Q3W.dog.pip.app"],
+        "components": [
+          { "/": "/auth-callback*", "comment": "OAuth/magic-link callback" }
+        ]
+      }
+    ]
+  }
+}
