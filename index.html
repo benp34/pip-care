@@ -224,8 +224,8 @@ function FE(en,st,bc,bg){
       }else if(t.includes('medication')){
         h+='<div class="entry-content">';
         if(p.dosage)h+='<div><span class="entry-label">Dosage:</span> '+E(p.dosage)+'</div>';
-        if(p.status){var medCls=p.status==='Active'?'med-status-active':'med-status-inactive';h+='<div><span class="med-status '+medCls+'">'+E(p.status)+'</span></div>';}
         if(p.content||p.notes)h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(p.content||p.notes)+'</div>';
+        if(p.status){var medCls=p.status==='Active'?'med-status-active':'med-status-inactive';h+='<div><span class="med-status '+medCls+'">'+E(p.status)+'</span></div>';}
         h+='</div>';
       }else if(t.includes('symptom')){
         h+='<div class="entry-content">';
