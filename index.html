@@ -174,8 +174,13 @@ function FE(en,st,bc,bg){
   if(bg)style+='background:'+bg+';';
   var h='<div class="entry"'+(style?' style="'+style+'"':'')+'>';
   // Diet + Grooming don't need dates — matches in-app which hides them.
-  var showDate=!(t.includes('diet')||t.includes('groom'));
-  h+='<div class="entry-header"><span class="entry-title">'+E(en.title)+'</span>';
+  // Symptoms render the date inline as "Observed: <date>" (matches Health screen layout), so suppress the header date too.
+  var showDate=!(t.includes('diet')||t.includes('groom')||t.includes('symptom'));
+  // Conditions + Symptoms get an orange "Condition: " / "Symptom: " label prefix to match the Health screen.
+  var titlePrefix='';
+  if(t.includes('allerg'))titlePrefix='<span style="color:#F97316">Condition: </span>';
+  else if(t.includes('symptom'))titlePrefix='<span style="color:#F97316">Symptom: </span>';
+  h+='<div class="entry-header"><span class="entry-title">'+titlePrefix+E(en.title)+'</span>';
   if(showDate&&en.entry_date)h+='<span class="entry-date">'+D(en.entry_date)+'</span>';
   h+='</div>';
 
@@ -193,8 +198,8 @@ function FE(en,st,bc,bg){
         h+='</div>';
       }else if(t.includes('allerg')){
         h+='<div class="entry-content">';
-        if(p.severity){var cls=p.severity==='Severe'?'severe':p.severity==='Moderate'?'moderate':'mild';h+='<span class="severity-badge severity-'+cls+'">'+E(p.severity)+'</span> '}
-        if(p.reaction)h+='<div style="margin-top:4px"><span class="entry-label">Signs / Symptoms:</span> '+E(p.reaction)+'</div>';
+        if(p.reaction)h+='<div><span class="entry-label">Signs / Symptoms:</span> '+E(p.reaction)+'</div>';
+        if(p.severity){var cls=p.severity==='Severe'?'severe':p.severity==='Moderate'?'moderate':'mild';h+='<div style="margin-top:4px"><span class="severity-badge severity-'+cls+'">'+E(p.severity)+'</span></div>'}
         // Skip notes that are just the literal placeholder-bait word 'Treatment' (users
         // occasionally typed it thinking it was a required label).
         var allergyNotes=p.content||p.notes;
@@ -229,6 +234,7 @@ function FE(en,st,bc,bg){
         h+='</div>';
       }else if(t.includes('symptom')){
         h+='<div class="entry-content">';
+        if(en.entry_date)h+='<div><span class="entry-label">Observed:</span> '+E(D(en.entry_date))+'</div>';
         var sNotes=p.notes||p.content;
         if(sNotes&&sNotes.trim().toLowerCase()!=='symptom')h+='<div style="color:var(--text-sub);margin-top:4px;font-size:12px">'+E(sNotes)+'</div>';
         h+='</div>';
