@@ -176,11 +176,7 @@ function FE(en,st,bc,bg){
   // Diet + Grooming don't need dates — matches in-app which hides them.
   // Symptoms render the date inline as "Observed: <date>" (matches Health screen layout), so suppress the header date too.
   var showDate=!(t.includes('diet')||t.includes('groom')||t.includes('symptom'));
-  // Conditions + Symptoms get an orange "Condition: " / "Symptom: " label prefix to match the Health screen.
-  var titlePrefix='';
-  if(t.includes('allerg'))titlePrefix='<span style="color:#F97316">Condition: </span>';
-  else if(t.includes('symptom'))titlePrefix='<span style="color:#F97316">Symptom: </span>';
-  h+='<div class="entry-header"><span class="entry-title">'+titlePrefix+E(en.title)+'</span>';
+  h+='<div class="entry-header"><span class="entry-title">'+E(en.title)+'</span>';
   if(showDate&&en.entry_date)h+='<span class="entry-date">'+D(en.entry_date)+'</span>';
   h+='</div>';
 
