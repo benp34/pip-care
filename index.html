@@ -467,8 +467,20 @@ document.addEventListener('click',function(ev){
 });
 document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeViewer()});
 
+// Cache the PIN per share token in sessionStorage so a page refresh
+// (or back/forward navigation) keeps the recipient signed in. Scope
+// is per-tab — closing the tab clears it. Token is part of the key
+// so different share links don't collide.
+var PIN_KEY='pip_pin_'+TK;
+function getCachedPin(){try{return sessionStorage.getItem(PIN_KEY)||null}catch(_){return null}}
+function setCachedPin(p){try{sessionStorage.setItem(PIN_KEY,p)}catch(_){}}
+function clearCachedPin(){try{sessionStorage.removeItem(PIN_KEY)}catch(_){}}
+
 async function load(pin){
   if(!TK){err('\u{1F615}','Invalid Link','This share link is missing a token.');return}
+  // Fall back to a cached PIN from this tab session if the caller
+  // didn't pass one (e.g. the implicit load() at script end on refresh).
+  if(!pin)pin=getCachedPin();
   var u=API+'?token='+encodeURIComponent(TK);
   // POST the PIN in the request body — keeps it out of browser history,
   // Referer headers, and any proxy logs. Token stays in the query string
@@ -476,12 +488,14 @@ async function load(pin){
   try{
     var r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pin?{pin:pin}:{})});
     var d=await r.json();
-    if(d.error==='pin_required'){pinUI();return}
-    if(d.error==='pin_incorrect'){pinUI('Incorrect PIN. Please try again.');return}
+    if(d.error==='pin_required'){clearCachedPin();pinUI();return}
+    if(d.error==='pin_incorrect'){clearCachedPin();pinUI('Incorrect PIN. Please try again.');return}
     if(d.error==='not_found'){err('\u{1F615}','Not Found',d.message);return}
     if(d.error==='expired'){err('\u23F0','Link Expired',d.message);return}
     if(d.error==='revoked'){err('\u{1F6AB}','Link Revoked',d.message);return}
     if(d.error){err('\u{1F615}','Error',d.message||'Something went wrong.');return}
+    // Successful unlock — remember the PIN for the rest of this tab session.
+    if(pin)setCachedPin(pin);
     render(d);
   }catch(e){err('\u{1F615}','Connection Error','Could not load the care profile. Please check your connection and try again.')}
 }
