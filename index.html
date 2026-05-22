@@ -442,9 +442,12 @@ document.addEventListener('keydown',function(ev){if(ev.key==='Escape')closeViewe
 async function load(pin){
   if(!TK){err('\u{1F615}','Invalid Link','This share link is missing a token.');return}
   var u=API+'?token='+encodeURIComponent(TK);
-  if(pin)u+='&pin='+encodeURIComponent(pin);
+  // POST the PIN in the request body — keeps it out of browser history,
+  // Referer headers, and any proxy logs. Token stays in the query string
+  // because it's already in the page URL the recipient visited.
   try{
-    var r=await fetch(u);var d=await r.json();
+    var r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pin?{pin:pin}:{})});
+    var d=await r.json();
     if(d.error==='pin_required'){pinUI();return}
     if(d.error==='pin_incorrect'){pinUI('Incorrect PIN. Please try again.');return}
     if(d.error==='not_found'){err('\u{1F615}','Not Found',d.message);return}
