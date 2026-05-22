@@ -143,8 +143,8 @@ body{font-family:'Nunito',system-ui,-apple-system,sans-serif;background:var(--bg
 .card button:disabled:hover{transform:none;box-shadow:0 4px 12px rgba(168,85,247,.25)}
 .pin-input input:disabled{opacity:.55;background:#F9FAFB;cursor:default}
 /* PIN screen: black Pip logo + in-button spinner */
-.pin-logo-wrap{display:flex;justify-content:center;margin-bottom:24px;color:#0A0A0A}
-.pip-logo-svg{width:44px;height:44px;display:block}
+.pin-logo-wrap{display:flex;justify-content:center;margin-bottom:24px}
+.pip-logo-svg{width:108px;height:auto;display:block}
 .btn-spinner{display:inline-block;width:20px;height:20px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:btn-spin .8s linear infinite}
 @keyframes btn-spin{to{transform:rotate(360deg)}}
 </style>
@@ -359,16 +359,8 @@ function err(icon,title,msg){
 }
 
 function pinUI(em){
-  // Pip "P" mark in black. Inlined so it renders with no extra HTTP request
-  // and no flash of unstyled content. fill=currentColor lets the wrapping
-  // .pin-logo-wrap colour it (#0A0A0A).
-  var logo='<svg class="pip-logo-svg" viewBox="0 0 39.75 39.75" xmlns="http://www.w3.org/2000/svg" aria-label="Pip">'+
-    '<path fill="currentColor" d="M 27.375 8.683594 C 29.351562 6.359375 32.257812 9.476562 30.328125 11.519531 C 30.113281 11.75 29.730469 11.882812 29.625 12.050781 C 29.578125 12.121094 29.6875 13.296875 29.613281 13.742188 C 29.234375 16.085938 26.445312 19.242188 24.738281 20.707031 C 23.902344 21.421875 23.058594 22.183594 22.085938 20.988281 C 20.726562 19.328125 22.859375 18.242188 23.769531 17.296875 C 24.523438 16.515625 25.578125 15.347656 26.101562 14.398438 C 27.117188 12.558594 26.726562 12.128906 24.835938 11.71875 C 23.921875 11.519531 23.03125 11.621094 22.160156 11.46875 C 19.679688 11.03125 18.144531 9.9375 15.429688 11.0625 C 10.125 13.257812 9.941406 22.863281 13.570312 27.117188 C 14.714844 28.460938 16.804688 28.070312 17.398438 26.386719 C 18.691406 22.6875 13.773438 17.460938 13.515625 16.425781 C 13.113281 14.773438 14.75 13.699219 15.886719 14.996094 C 17.78125 16.824219 18.976562 19 19.84375 21.191406 C 20.988281 24.832031 21.035156 28.105469 19.164062 30.109375 C 17.761719 31.613281 15.617188 31.988281 13.769531 31.15625 C 6.050781 27.667969 5.40625 9.882812 15.78125 7.589844 C 18.648438 6.957031 20.226562 7.84375 22.824219 8.300781 C 24.183594 8.542969 25.664062 8.402344 27 9.042969 C 27.054688 9.070312 27.121094 9.070312 27.175781 9.042969 C 27.234375 9.015625 27.277344 8.964844 27.296875 8.902344 C 27.320312 8.820312 27.335938 8.730469 27.375 8.683594 Z"/>'+
-    '<path fill="currentColor" d="M 20.144531 12.660156 C 21.25 12.214844 21.667969 14.007812 20.609375 14.25 C 19.890625 14.410156 19.171875 13.054688 20.144531 12.660156 Z"/>'+
-    '<path fill="currentColor" d="M 19.480469 0 C 8.734375 0 0 8.734375 0 19.480469 C 0 30.226562 8.734375 38.960938 19.480469 38.960938 C 30.226562 38.960938 38.960938 30.226562 38.960938 19.480469 C 38.960938 8.734375 30.226562 0 19.480469 0 Z M 19.480469 1.5 C 29.417969 1.5 37.460938 9.542969 37.460938 19.480469 C 37.460938 29.417969 29.417969 37.460938 19.480469 37.460938 C 9.542969 37.460938 1.5 29.417969 1.5 19.480469 C 1.5 9.542969 9.542969 1.5 19.480469 1.5 Z"/>'+
-    '</svg>';
   var h='<div class="card-center"><div class="card">';
-  h+='<div class="pin-logo-wrap">'+logo+'</div>';
+  h+='<div class="pin-logo-wrap"><img class="pip-logo-svg" src="pip-logo.svg" alt="Pip"></div>';
   h+='<h1 id="pinTitle">\u{1F510} PIN Required</h1>';
   h+='<div id="pinCopy"><p style="margin-bottom:4px">This care profile is protected.</p><p>Enter the 4-digit PIN to view it.</p></div>';
   if(em)h+='<p class="error-msg" style="margin-top:12px">'+E(em)+'</p>';
