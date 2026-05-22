@@ -27,6 +27,10 @@
 <style>
 :root{--purple:#A855F7;--purple-dark:#7C3AED;--bg:#FAFAF9;--card:#fff;--text:#1F2937;--text-sub:#6B7280;--text-light:#9CA3AF;--border:#E5E7EB;--green:#22C55E}
 *{box-sizing:border-box;margin:0;padding:0}
+/* Paint <html> with the lavender top of the header gradient so the iOS
+   Safari safe-area / overscroll above the header matches instead of
+   showing the body's off-white. */
+html{background-color:#E6D5FB}
 body{font-family:'Nunito',system-ui,-apple-system,sans-serif;background:var(--bg);min-height:100vh;color:var(--text);-webkit-font-smoothing:antialiased}
 
 /* Header */
