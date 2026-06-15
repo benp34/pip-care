@@ -314,8 +314,12 @@ function render(data){
       if((!s.type||s.type==='data')&&s.entries&&s.entries.length)h+='<span class="entry-count">'+s.entries.length+'</span>';
       h+='</div><div class="section-body">';
       if(s.type==='text'){
-        // Free-text section — preserve line breaks from user input.
-        h+='<div class="free-text">'+E(s.content).replace(/\n/g,'<br/>')+'</div>';
+        // Free-text section — preserve line breaks; show empty state when blank
+        // so an in-plan section (e.g. Microchip Number) still appears with
+        // "No entries yet" rather than vanishing, mirroring data sections.
+        var ft=(s.content||'').trim();
+        if(ft)h+='<div class="free-text">'+E(s.content).replace(/\n/g,'<br/>')+'</div>';
+        else h+='<div class="empty">No entries yet</div>';
       }else{
         // Data-driven section (default for legacy payloads without `type`).
         var es=s.entries||[];
